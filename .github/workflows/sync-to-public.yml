@@ -25,13 +25,28 @@ jobs:
 
       - name: Push to public repository
         run: |
+          # Safety checks
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          if [ "$CURRENT_BRANCH" != "main" ]; then
+            echo "❌ ERROR: Not on main branch (currently on: $CURRENT_BRANCH)"
+            echo "This workflow should only run on main branch"
+            exit 1
+          fi
+
+          # Verify the PR was merged to main
+          if [ "${{ github.event.pull_request.base.ref }}" != "main" ]; then
+            echo "❌ ERROR: PR was not targeting main branch"
+            echo "PR was targeting: ${{ github.event.pull_request.base.ref }}"
+            exit 1
+          fi
+
           # Add public repo as remote with authentication
           git remote add public https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/anthropics/claude-cookbooks.git
           git fetch public
 
-          # Try to push (fast-forward only)
-          if git push public main; then
-            echo "✅ Successfully pushed to public repository"
+          # Try to push main branch explicitly (fast-forward only)
+          if git push public main:main; then
+            echo "✅ Successfully pushed main to public repository"
           else
             echo "❌ Failed to push to public repository"
             echo "This likely means the public repo has diverged from private."

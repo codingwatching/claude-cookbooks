@@ -25,14 +25,29 @@ jobs:
 
       - name: Push to private repository
         run: |
+          # Safety checks
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          if [ "$CURRENT_BRANCH" != "main" ]; then
+            echo "❌ ERROR: Not on main branch (currently on: $CURRENT_BRANCH)"
+            echo "This workflow should only run on main branch"
+            exit 1
+          fi
+
+          # Verify the PR was merged to main
+          if [ "${{ github.event.pull_request.base.ref }}" != "main" ]; then
+            echo "❌ ERROR: PR was not targeting main branch"
+            echo "PR was targeting: ${{ github.event.pull_request.base.ref }}"
+            exit 1
+          fi
+
           # Add private repo as remote with authentication
           # Note: PRIVATE_SYNC_TOKEN must have write access to the private repo
           git remote add private https://x-access-token:${{ secrets.PRIVATE_SYNC_TOKEN }}@github.com/anthropics/claude-cookbooks-private.git
           git fetch private
 
-          # Try to push (fast-forward only)
-          if git push private main; then
-            echo "✅ Successfully pushed to private repository"
+          # Try to push main branch explicitly (fast-forward only)
+          if git push private main:main; then
+            echo "✅ Successfully pushed main to private repository"
           else
             echo "❌ Failed to push to private repository"
             echo "This likely means the private repo has diverged from public."
