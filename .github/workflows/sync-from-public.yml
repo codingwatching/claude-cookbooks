@@ -1,4 +1,4 @@
-name: Sync with Public Repo
+name: Daily Sync from Public Repo
 
 on:
   schedule:
