@@ -34,7 +34,8 @@
 - title: 'Managed Agents tutorial: production setup'
   description: End-to-end production story for Managed Agents — vault-backed MCP
     credentials, the session.status_idled webhook pattern for human-in-the-loop
-    without long-lived connections, and the resource lifecycle CRUD verbs.
+    without long-lived connections, the session.budget_reached webhook, inference_geo
+    pinning for residency, and the resource lifecycle CRUD verbs.
   path: managed_agents/CMA_operate_in_production.ipynb
   authors:
   - pauly-ant
@@ -794,9 +795,9 @@
 - title: 'Multiagent: coordinate a specialist team'
   description: Heterogeneous team via the multiagent coordinator config — a coordinator
     runs three specialists (web-search researcher, file-reading librarian, rules-based
-    pricer) with scoped toolsets to assemble a sales proposal. Covers the multiagent
-    field, the thread_created / thread_message_received event types, and per-role
-    tool scoping.
+    pricer) with scoped toolsets to assemble a sales proposal, plus an advisor entry
+    the coordinator consults before writing. Covers the multiagent field, the thread_created
+    / thread_message_received event types, and per-role tool scoping.
   path: managed_agents/CMA_coordinate_specialist_team.ipynb
   authors:
   - markn-ant
@@ -808,8 +809,8 @@
   description: Two-model team economics via the multiagent coordinator config — a
     frontier coordinator plans and synthesizes while cheap search workers do the
     token-heavy web reading in parallel threads, compared against a rigor-matched
-    solo-frontier control with real bills. Covers per-thread usage metering and
-    cost attribution.
+    solo-frontier control with real bills. Covers per-thread usage.list_cost metering,
+    cost attribution, and a session budget as the fan-out guardrail.
   path: managed_agents/CMA_plan_big_execute_small.ipynb
   authors:
   - bradabrams
@@ -841,6 +842,51 @@
   categories:
   - Claude Managed Agents
   - Observability
+- title: 'Advisor: let a working agent consult a stronger model mid-turn'
+  description: Add an advisor entry to a Managed Agents roster so a mid-tier working
+    model can consult a more capable model inside a turn, read each consultation off
+    the event stream, price it from the advisor thread's usage, and handle the redacted
+    delivery arm.
+  path: managed_agents/CMA_consult_an_advisor.ipynb
+  authors:
+  - cj-ant
+  date: '2026-07-23'
+  categories:
+  - Claude Managed Agents
+  - Agent Patterns
+- title: 'Budgets: cap what a session can spend'
+  description: Set an enforced list-cost budget on a Managed Agents session, watch spend
+    accumulate through session.usage events, catch the budget_reached pause, and raise,
+    lower, or remove the cap with sessions.update.
+  path: managed_agents/CMA_cap_session_spend.ipynb
+  authors:
+  - cj-ant
+  date: '2026-07-23'
+  categories:
+  - Claude Managed Agents
+  - Observability
+- title: 'Skills: pick up a repo''s .claude/skills automatically'
+  description: Mount a GitHub repository so its root .claude/skills directory is discovered
+    at session start and injected into the agent, watch the read-then-follow protocol
+    when a request matches a skill description, and learn the layout and lifecycle rules.
+  path: managed_agents/CMA_use_skills_from_a_repo.ipynb
+  authors:
+  - cj-ant
+  date: '2026-07-23'
+  categories:
+  - Claude Managed Agents
+  - Skills
+- title: 'Data residency: pin an agent''s inference geography'
+  description: Pin a Managed Agents agent to US-region inference with model.inference_geo,
+    confirm the pin on a session, work with the workspace allowed_inference_geos policy,
+    and override the geography for a single session with agent_with_overrides.
+  path: managed_agents/CMA_pin_inference_geo.ipynb
+  authors:
+  - cj-ant
+  date: '2026-07-23'
+  categories:
+  - Claude Managed Agents
+  - Tools
 - title: Classifier fallback and billing for Claude Fable 5
   description: Detect safety classifier blocks on Fable 5 and fall back to Opus 4.8
     with server-side or SDK-based client-side fallback, including streaming behavior
