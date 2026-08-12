@@ -399,6 +399,18 @@
   date: '2024-08-14'
   categories:
   - Responses
+- title: Cost Optimization on the Claude API
+  description: Walk a claims-adjuster agent through a cost optimization checklist (prompt
+    caching, input and output token management, agent-loop efficiency, batching, and model
+    and effort selection), measuring pass rate and cost per task at each step to find the
+    Pareto-optimal configuration.
+  path: cost_optimization/cost_optimization.ipynb
+  authors:
+  - benlehrburger-ant
+  date: '2026-08-09'
+  categories:
+  - Agent Patterns
+  - Evals
 - title: Session memory compaction
   description: Manage long-running Claude conversations with instant session memory
     compaction using background threading and prompt caching.
