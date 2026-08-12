@@ -400,10 +400,8 @@
   categories:
   - Responses
 - title: Cost Optimization on the Claude API
-  description: Walk a claims-adjuster agent through a cost optimization checklist (prompt
-    caching, input and output token management, agent-loop efficiency, batching, and model
-    and effort selection), measuring pass rate and cost per task at each step to find the
-    Pareto-optimal configuration.
+  description: An eval-driven guide to running agents on frontier models at production
+    cost, applying the Claude API's cost levers one at a time.
   path: cost_optimization/cost_optimization.ipynb
   authors:
   - benlehrburger-ant
