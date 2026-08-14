@@ -17,9 +17,11 @@ W = H = 1080
 
 
 def font(size: int, bold: bool = True):
-    for path, idx in [("/System/Library/Fonts/Helvetica.ttc", 1 if bold else 0),
-                      ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0),
-                      ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 0)]:
+    for path, idx in [
+        ("/System/Library/Fonts/Helvetica.ttc", 1 if bold else 0),
+        ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0),
+        ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 0),
+    ]:
         try:
             return ImageFont.truetype(path, size, index=idx)
         except OSError:
@@ -42,7 +44,10 @@ def northpeak_trail():
     """Clean sneaker ad: low text, brand visible, nothing restricted."""
     img = Image.new("RGB", (W, H), "#2E4A3A")
     d = ImageDraw.Draw(img)
-    d.polygon([(0, 800), (300, 500), (560, 700), (820, 420), (1080, 640), (1080, 1080), (0, 1080)], fill="#22382C")
+    d.polygon(
+        [(0, 800), (300, 500), (560, 700), (820, 420), (1080, 640), (1080, 1080), (0, 1080)],
+        fill="#22382C",
+    )
     d.ellipse([340, 620, 740, 820], fill="#4A5A50")  # rock
     # the shoe
     d.rounded_rectangle([400, 520, 700, 640], 40, fill="#D7DBD2")
@@ -59,8 +64,12 @@ def betpeak_bonus():
     (deliberately NO 1-800-GAMBLER — the NJ rule should catch it)."""
     img = Image.new("RGB", (W, H), "#101820")
     d = ImageDraw.Draw(img)
-    for x, y, r, c in [(180, 760, 110, "#C43A20"), (320, 830, 95, "#1B6B4A"),
-                       (120, 930, 80, "#B8860B"), (420, 960, 70, "#3B3F8C")]:
+    for x, y, r, c in [
+        (180, 760, 110, "#C43A20"),
+        (320, 830, 95, "#1B6B4A"),
+        (120, 930, 80, "#B8860B"),
+        (420, 960, 70, "#3B3F8C"),
+    ]:
         d.ellipse([x - r, y - r, x + r, y + r], fill=c, outline="#E8E4D8", width=6)
         d.ellipse([x - r + 18, y - r + 18, x + r - 18, y + r - 18], outline="#E8E4D8", width=3)
     d.text((70, 130), "GET UP TO", font=font(64), fill="#E8E4D8")
@@ -77,7 +86,13 @@ def peaklend_rate():
     img = Image.new("RGB", (W, H), "#123B2E")
     d = ImageDraw.Draw(img)
     for i in range(6):
-        d.arc([600 - i * 60, 300 - i * 60, 1400 + i * 60, 1100 + i * 60], 180, 300, fill="#1B5240", width=8)
+        d.arc(
+            [600 - i * 60, 300 - i * 60, 1400 + i * 60, 1100 + i * 60],
+            180,
+            300,
+            fill="#1B5240",
+            width=8,
+        )
     d.text((70, 140), "Personal loans", font=font(66), fill="#EAF2ED")
     d.text((70, 250), "from", font=font(66), fill="#EAF2ED")
     d.text((70, 340), "3.9%", font=font(220), fill="#8FE3B0")
