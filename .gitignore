@@ -163,3 +163,7 @@ tool_use/.env
 
 # Cybersecurity notebook artifacts (regenerated each run)
 claude_agent_sdk/vulnerability_detection_agent/canary/THREAT_MODEL.md
+
+# content_moderation: generated eval artifacts
+capabilities/content_moderation/evaluation/compiled/
+capabilities/content_moderation/evaluation/results.json
