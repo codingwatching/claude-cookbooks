@@ -26,7 +26,15 @@ COMPILER_MODEL = "claude-opus-5"
 EXTRACTOR_MODEL = "claude-sonnet-5"
 MODEL = COMPILER_MODEL  # backward-compatible alias
 
-client = anthropic.Anthropic()
+client: anthropic.Anthropic | None = None
+
+
+def _client() -> anthropic.Anthropic:
+    """Create the API client on first use, after the caller has loaded credentials."""
+    global client
+    if client is None:
+        client = anthropic.Anthropic()
+    return client
 
 
 # ---------------------------------------------------------------------------
@@ -140,14 +148,16 @@ def compile_policies(
     attempts: list[dict] = []
 
     for round_no in range(max_repair_rounds + 1):
-        with client.messages.stream(
+        with _client().messages.stream(
             model=COMPILER_MODEL,
             max_tokens=32000,
             messages=messages,
         ) as stream:
             response = stream.get_final_message()
 
-        text = next(b.text for b in response.content if b.type == "text")
+        text = next((b.text for b in response.content if b.type == "text"), None)
+        if text is None:
+            raise RuntimeError("model response contained no text block")
         try:
             doc = _parse_json_reply(text)
             problems = validate_document(doc, schema, context_schema)
@@ -219,8 +229,12 @@ JSON object only, no prose, no fences:
 }}"""
     messages = [{"role": "user", "content": prompt}]
     for _ in range(max_repair_rounds + 1):
-        response = client.messages.create(model=COMPILER_MODEL, max_tokens=8000, messages=messages)
-        text = next(b.text for b in response.content if b.type == "text")
+        response = _client().messages.create(
+            model=COMPILER_MODEL, max_tokens=8000, messages=messages
+        )
+        text = next((b.text for b in response.content if b.type == "text"), None)
+        if text is None:
+            raise RuntimeError("model response contained no text block")
         out = _parse_json_reply(text)
         candidate = {
             "derived_fields": {**doc.get("derived_fields", {}), **out.get("derived_fields", {})},
@@ -286,12 +300,16 @@ def extract_fields(
     content: list[dict[str, Any]] = []
     if image_path is not None:
         p = pathlib.Path(image_path)
-        media_type = {
+        media_types = {
             "png": "image/png",
             "jpg": "image/jpeg",
             "jpeg": "image/jpeg",
             "webp": "image/webp",
-        }[p.suffix.lstrip(".").lower()]
+        }
+        ext = p.suffix.lstrip(".").lower()
+        if ext not in media_types:
+            raise ValueError(f"unsupported image type: {p.suffix} (expected png, jpg, or webp)")
+        media_type = media_types[ext]
         content.append(
             {
                 "type": "image",
@@ -311,7 +329,7 @@ def extract_fields(
         }
     )
 
-    response = client.messages.create(
+    response = _client().messages.create(
         model=EXTRACTOR_MODEL,
         max_tokens=4096,
         system=EXTRACTOR_SYSTEM,
@@ -323,5 +341,7 @@ def extract_fields(
         },
         messages=[{"role": "user", "content": content}],
     )
-    text = next(b.text for b in response.content if b.type == "text")
+    text = next((b.text for b in response.content if b.type == "text"), None)
+    if text is None:
+        raise RuntimeError("model response contained no text block")
     return json.loads(text)

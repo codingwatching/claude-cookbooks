@@ -80,7 +80,8 @@ you sharpen one field description in the schema, not the rules or the engine.
 ## Run it
 
 ```bash
-pip install anthropic python-dotenv
+# from the repo root (or standalone: pip install anthropic python-dotenv)
+uv sync --all-extras
 # from capabilities/content_moderation/, runs the full 22-sample evaluation:
 python evaluation/run_eval.py
 ```

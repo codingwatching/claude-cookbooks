@@ -35,7 +35,7 @@ COMPILED.mkdir(exist_ok=True)
 DOMAINS = ["ad_creatives", "product_listings", "ugc"]
 
 
-def load_domain(name: str):
+def load_domain(name: str) -> dict:
     d = ROOT / "data" / name
     return {
         "dir": d,
@@ -66,13 +66,14 @@ def rules_for(name: str, dom: dict) -> dict:
     return doc
 
 
-def main():
+def main() -> None:
     results = {"domains": {}, "totals": {"correct": 0, "n": 0}}
     for name in DOMAINS:
         dom = load_domain(name)
         doc = rules_for(name, dom)
         problems = validate_document(doc, dom["schema"], dom["context"])
-        assert not problems, f"{name}: ruleset fails static validation: {problems}"
+        if problems:
+            raise ValueError(f"{name}: ruleset fails static validation: {problems}")
 
         print(f"\n═══ {name} — {len(doc['rules'])} rules, {len(dom['samples'])} samples")
         rows = []
